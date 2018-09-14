@@ -12,11 +12,12 @@ namespace Vamp
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        Texture2D test;
         
         public VampGame()
         {
             graphics = new GraphicsDeviceManager(this);
-            Content.RootDirectory = "Content";
+            Content.RootDirectory = "..\\res";
         }
 
         protected override void Initialize()
@@ -30,7 +31,7 @@ namespace Vamp
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
+            test = Content.Load<Texture2D>("test");
             // TODO: use this.Content to load your game content here
         }
 
@@ -51,6 +52,12 @@ namespace Vamp
         protected override void Draw(GameTime time)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+
+            spriteBatch.Begin();
+
+            spriteBatch.Draw(test, Vector2.Zero, null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
+
+            spriteBatch.End();
 
             base.Draw(time);
         }
