@@ -18,11 +18,17 @@ namespace Vamp
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "..\\res";
+			
         }
 
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+
+			Collider a = new Collider(null);
+			Collider b = new Collider(null);
+
+			a.overlaps(b);
 
             base.Initialize();
         }
