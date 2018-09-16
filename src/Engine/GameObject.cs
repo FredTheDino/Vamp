@@ -34,8 +34,39 @@ namespace Vamp
 
 
         // Getter and Setter methods
-        public Collider Collider { get => collider; set => collider = value; }
-        public Vector2 Position { get => position; set => position = value; }
-        public Vector2 Scale { get => scale; set => scale = value; }
+
+        public Collider Collider 
+		{ 
+			get 
+			{
+				return collider;
+			}
+			set 
+			{
+				collider = value; 
+			}
+		}
+        public Vector2 Position 
+		{ 
+			get 
+			{
+				return position; 
+			}
+			set 
+			{
+				position = value; 
+			}
+		}
+        public Vector2 Scale 
+		{ 
+			get 
+			{
+				return scale; 
+			}
+			set 
+			{
+				scale = value; 
+			}
+		}
     }
 }

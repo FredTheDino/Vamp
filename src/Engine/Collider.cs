@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 using System.Collections.Generic;
 
 namespace Vamp
@@ -9,49 +10,77 @@ namespace Vamp
 	/*
 	 * Colliders that lets things hit other colliders.
 	 */
+
+	public enum Shape
+	{
+		Box,
+		Circle,
+	}
+
 	public class Collider
 	{
 		private GameObject owner;
-		private bool is_box = false;
+		private Shape shape;
 
-		public Collider(GameObject owner, bool is_box=false) 
+		public Collider(GameObject owner, Shape shape=Shape.Box) 
 		{
 			this.owner = owner;
-			this.is_box = is_box;
 				
 			// TODO: Add to the collision engine.
 		}
 
 		public bool overlaps(Collider other)
 		{
-			
+			Vector2 distance = owner.Position - other.owner.Position;
+			Vector2 normalized_distance = Vector2.Normalize(distance);
 			List<Vector2> normals;
-			if (!this.is_box || !other.is_box)
+
+			if (shape == other.Shape)
 			{
 				normals = new List<Vector2>(new Vector2[] {
-					new Vector2( 1,  0), new Vector2( 0,  1),
-					new Vector2(-1,  0), new Vector2( 0, -1),
-					new Vector2( 1,  1), new Vector2( 1, -1),
-					new Vector2(-1,  1), new Vector2(-1, -1)
-				});
-			}
-			else
-			{
-				normals = new List<Vector2>(new Vector2[] {
-					new Vector2( 1,  0), new Vector2( 0,  1),
-					new Vector2(-1,  0), new Vector2( 0, -1)
+						new Vector2( 1,  0), new Vector2( 0,  1),
+						new Vector2(-1,  0), new Vector2( 0, -1)
 				});
 			}
 
-			foreach (Vector2 normal in normals)
+			if (shape == Shape.Box && other.Shape == Shape.Box)
 			{
+				
 			}
+			else
+			{
+				Console.WriteLine("SHOULD NOT REACH HERE");
+				return false;
+			}
+
 			return false;
 		}
 
 		// Dumb Getter and Setter methods
-		public GameObject Owner { get => owner; set => owner = value; }
-		public bool Box { get => is_box; set => is_box = value; }
+		public GameObject Owner 
+		{
+			get
+			{
+				return owner; 
+			}
+
+			set 
+			{
+				owner = value; 
+			}
+		}
+		public Shape Shape 
+		{
+			get
+			{
+				return shape; 
+			}
+
+			set 
+			{
+				shape = value; 
+			}
+		}
 	}
 }
 
