@@ -25,7 +25,7 @@ namespace Vamp
         public GameObject () : this(new Vector2(), new Vector2(1,1), null) {}
 
         // Main constructor
-        public GameObject (Vector2 position, float scale, Collider collider)
+        public GameObject (Vector2 position, Vector2 scale, Collider collider)
         {
             this.position = position;
             this.scale = scale;
@@ -36,6 +36,6 @@ namespace Vamp
         // Getter and Setter methods
         public Collider Collider { get => collider; set => collider = value; }
         public Vector2 Position { get => position; set => position = value; }
-        public float Scale { get => scale; set => scale = value; }
+        public Vector2 Scale { get => scale; set => scale = value; }
     }
 }
