@@ -17,18 +17,17 @@ namespace Vamp
         // The position of the object
         private Vector2 position;
 
-        // The size and scale of the object
-        private float size, scale;
+        // The scale of the object
+        private Vector2 scale;
 
 
         // Base constructor
-        public GameObject () : this(new Vector2(), 128, 1, null) {}
+        public GameObject () : this(new Vector2(), new Vector2(1,1), null) {}
 
         // Main constructor
-        public GameObject (Vector2 position, float size, float scale, Collider collider)
+        public GameObject (Vector2 position, float scale, Collider collider)
         {
             this.position = position;
-            this.size = size;
             this.scale = scale;
             this.collider = collider;
         }
@@ -38,6 +37,5 @@ namespace Vamp
         public Collider Collider { get => collider; set => collider = value; }
         public Vector2 Position { get => position; set => position = value; }
         public float Scale { get => scale; set => scale = value; }
-        public float Size { get => size; set => size = value; }
     }
 }
