@@ -12,12 +12,7 @@ namespace Vamp
         private Vector2 position;
         private float size, scale;
 
-        public GameObject () : this(new Vector2(), 128, 1, null)
-        {
-            position = new Vector2();
-            scale = 1;
-            size = 128;
-        }
+        public GameObject () : this(new Vector2(), 128, 1, null) {}
 
         public GameObject (Vector2 position, float size, float scale, Collider collider)
         {
