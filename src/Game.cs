@@ -12,7 +12,8 @@ namespace Vamp
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        Texture2D test;
+        Texture2D test, playersprite;
+        Player player;
         
         public VampGame()
         {
@@ -23,6 +24,7 @@ namespace Vamp
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            player = new Player(new Vector2(50, 50));
 
             base.Initialize();
         }
@@ -32,7 +34,7 @@ namespace Vamp
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             test = Content.Load<Texture2D>("test");
-            // TODO: use this.Content to load your game content here
+            playersprite = Content.Load<Texture2D>("player");
         }
 
 
@@ -46,6 +48,8 @@ namespace Vamp
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            player.Update(time, Keyboard.GetState());
+
             base.Update(time);
         }
 
@@ -56,6 +60,7 @@ namespace Vamp
             spriteBatch.Begin();
 
             spriteBatch.Draw(test, Vector2.Zero, null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
+            spriteBatch.Draw(playersprite, player.Position, null, Color.White, 0, Vector2.Zero, player.Scale, SpriteEffects.None, 0);
 
             spriteBatch.End();
 
