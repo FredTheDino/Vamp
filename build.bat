@@ -22,6 +22,8 @@ if %_PATH% == YES (
 	call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\vsdevcmd"
 )
 
+if not exist bin mkdir bin
+
 PUSHD bin
 PUSHD "%_LIB%"
 COPY /Y * "../../bin" >nul 2>nul
