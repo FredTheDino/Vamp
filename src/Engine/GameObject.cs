@@ -9,32 +9,30 @@ namespace Vamp
     /*
      * Main class for all objects in the game
      */
-    public abstract class GameObject
+    public /*abstract*/ class GameObject
     {
-        // The attached collider
-        private Collider collider;
-
         // The position of the object
-        private Vector2 position;
+        private Vector2 position = new Vector2();
 
         // The scale of the object
-        private Vector2 scale;
+        private Vector2 scale = new Vector2(1, 1);
+		
+        // The attached collider
+        private Collider collider = null;
 
 
         // Base constructor
-        public GameObject () : this(new Vector2(), new Vector2(1,1), null) {}
+        public GameObject () {}
 
         // Main constructor
-        public GameObject (Vector2 position, Vector2 scale, Collider collider)
+        public GameObject (Vector2 position, Vector2 scale, Collider collider = null)
         {
             this.position = position;
             this.scale = scale;
-            this.collider = collider;
+			this.collider = collider;
         }
 
-
         // Getter and Setter methods
-
         public Collider Collider 
 		{ 
 			get 
@@ -43,6 +41,7 @@ namespace Vamp
 			}
 			set 
 			{
+				// TODO: Should set the owner field.
 				collider = value; 
 			}
 		}

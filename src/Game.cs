@@ -25,11 +25,18 @@ namespace Vamp
         {
             // TODO: Add your initialization logic here
 
-			Collider a = new Collider(null);
-			Collider b = new Collider(null);
+			
+			GameObject a = new GameObject(
+					new Vector2(0.0f, 0.0f),
+					new Vector2(1.0f, 1.0f),
+					new Collider());
+			GameObject b = new GameObject(
+					new Vector2(0.3f, 0.8f),
+					new Vector2(1.0f, 1.0f),
+					new Collider());
 
-			a.overlaps(b);
-
+			PhysicsSystem system = new PhysicsSystem();
+			system.Check(a, b);
             base.Initialize();
         }
 

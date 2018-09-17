@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+
 using System;
 using System.Collections.Generic;
 
@@ -15,91 +16,99 @@ namespace Vamp
 
 	public class Overlap
 	{
-		public Collider a, b;
-		public float depth;
-		public Vector2 normal;
+		public GameObject A, B;
+		public float Depth;
+		public Vector2 Normal;
 
-		public Overlap(Collider a, Collider b)
+		public Overlap(GameObject A, GameObject B)
 		{
-			this.a = a;
-			this.b = b;
-			this.normal = new Vector2();
-			this.depth = float.MaxValue;
+			this.A = A;
+			this.B = B;
+			this.Normal = new Vector2();
+			this.Depth = float.MaxValue;
 		}
 	};
 
-	public class Collider
+	public class PhysicsSystem
 	{
-		private GameObject owner;
-		private Shape shape;
+		private List<GameObject> gameObjects;
 
-		public Collider(GameObject owner, Shape shape=Shape.Box) 
+		public PhysicsSystem()
 		{
-			this.owner = owner;
-				
-			// TODO: Add to the collision engine.
+			gameObjects = new List<GameObject>();
 		}
 
-		public float Project(Vector2 normal)
+		public Overlap Check(GameObject A, GameObject B)
 		{
-			if (shape == Shape.Box)
-			{
-				if (Math.Abs(normal.X) > Math.Abs(normal.Y))
-				{
-					normal = new Vector2(Math.Sign(normal.X), 0);
-				}
-				else
-				{
-					normal = new Vector2(0, Math.Sign(normal.Y));
-				}
-
-				return Vector2.Dot(owner.Scale + owner.Position, normal);
-			}
-			else 
-			{
-				return Vector2.Dot(owner.Scale.X * normal + owner.Position, normal);
-			}
-		}
-
-		public Overlap overlaps(Collider other)
-		{
-			Vector2 distance = owner.Position - other.owner.Position;
+			Vector2 distance = A.Position - B.Position;
 
 			// Find all potential normals.
 			List<Vector2> normals = new List<Vector2>();
-			if (this.shape == Shape.Box || other.shape == Shape.Box)
+			if (A.Collider.Shape == Shape.Box || B.Collider.Shape == Shape.Box)
 			{
 				normals.AddRange(new Vector2[] {
 					new Vector2( 1,  0), new Vector2( 0,  1)
 				});
 			}
-			if (this.shape == Shape.Circle || other.shape == Shape.Circle)
+			if (A.Collider.Shape == Shape.Circle || B.Collider.Shape == Shape.Circle)
 			{
 				normals.Add( Vector2.Normalize(distance) );
 			}
 
-			Overlap overlap = new Overlap(this, other);
-			foreach (Vector2 normal in normals)
+			Overlap overlap = new Overlap(A, B);
+			foreach (Vector2 Normal in normals)
 			{
-				// Get extreems (Different signs of the normals).
-				// Check if they overlap with distance projected.
-				// If they don't, return false, else keep looping until
-				// we run out of normals.
+				float projected_distance = Vector2.Dot(distance, Normal);
+				float projected_limit = 
+					Math.Abs(B.Collider.Project(B.Scale, Normal)) + 
+					Math.Abs(A.Collider.Project(A.Scale, Normal));
+				float Depth = projected_limit - projected_distance;
+
+				// They overlap.
+				if (Depth < overlap.Depth)
+				{
+					overlap.Normal = Normal;
+					overlap.Depth = Depth;
+				}
+
+				if (Depth < 0.0)
+				{
+					break;
+				}
 			}
 
+			Console.WriteLine($"{overlap.Normal}, {overlap.Depth}");
 			return overlap;
 		}
+	}
 
-		// Dumb Getter and Setter methods
-		public GameObject Owner 
+	public class Collider
+	{
+		private Shape shape;
+
+		public Collider(Shape shape=Shape.Box) 
 		{
-			get
+			this.shape = shape;
+		}
+
+		public float Project(Vector2 Scale, Vector2 Normal)
+		{
+			if (shape == Shape.Box)
 			{
-				return owner; 
+				if (Math.Abs(Normal.X) > Math.Abs(Normal.Y))
+				{
+					Normal = new Vector2(Math.Sign(Normal.X), 0);
+				}
+				else
+				{
+					Normal = new Vector2(0, Math.Sign(Normal.Y));
+				}
+
+				return Vector2.Dot(Scale, Normal);
 			}
-			set 
+			else 
 			{
-				owner = value; 
+				return Vector2.Dot(Scale.X * Normal, Normal);
 			}
 		}
 
