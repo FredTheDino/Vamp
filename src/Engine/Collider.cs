@@ -58,7 +58,8 @@ namespace Vamp
 			Overlap overlap = new Overlap(A, B);
 			foreach (Vector2 Normal in normals)
 			{
-				float projected_distance = Vector2.Dot(distance, Normal);
+				float projected_distance = 
+					Math.Abs(Vector2.Dot(distance, Normal));
 				float projected_limit = 
 					Math.Abs(B.Collider.Project(B.Scale, Normal)) + 
 					Math.Abs(A.Collider.Project(A.Scale, Normal));
@@ -67,7 +68,7 @@ namespace Vamp
 				// They overlap.
 				if (Depth < overlap.Depth)
 				{
-					overlap.Normal = Normal;
+					overlap.Normal = Vector2.Dot(Normal, distance) < 0 ? -Normal : Normal;
 					overlap.Depth = Depth;
 				}
 
@@ -77,7 +78,6 @@ namespace Vamp
 				}
 			}
 
-			Console.WriteLine($"{overlap.Normal}, {overlap.Depth}");
 			return overlap;
 		}
 	}

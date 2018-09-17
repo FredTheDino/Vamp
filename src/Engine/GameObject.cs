@@ -32,6 +32,9 @@ namespace Vamp
 			this.collider = collider;
         }
 
+        // Empty Update function to allow all object to update
+        public void Update () {}
+
         // Getter and Setter methods
         public Collider Collider 
 		{ 
@@ -69,3 +72,4 @@ namespace Vamp
 		}
     }
 }
+
