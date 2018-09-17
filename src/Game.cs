@@ -66,13 +66,11 @@ namespace Vamp
 			GameObject a = new GameObject(
 					new Vector2(56.0f, 67.0f),
 					new Vector2(32.0f, 32.0f),
-					new Collider());
+					new Collider(false, Shape.Box));
 			PhysicsSystem system = new PhysicsSystem();
 			Overlap overlap = system.Check(a, player);
+			overlap.Solve();
 			
-			if (overlap.Depth > 0)
-				player.Position -= overlap.Normal * overlap.Depth;
-
             spriteBatch.Begin();
 
             //spriteBatch.Draw(test, Vector2.Zero, null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
