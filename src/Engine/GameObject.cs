@@ -49,7 +49,7 @@ namespace Vamp
 		// Draw the collider on the body.
 		public void DrawCollider(SpriteBatch batch)
 		{
-			if (!collider)
+			if (collider == null)
 				return;
 
 			if (collider.Shape == Shape.Box)
