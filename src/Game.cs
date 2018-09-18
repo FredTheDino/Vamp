@@ -19,7 +19,6 @@ namespace Vamp
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "..\\res";
-			
         }
 
         protected override void Initialize()
@@ -37,6 +36,7 @@ namespace Vamp
             test = Content.Load<Texture2D>("test");
             playersprite = Content.Load<Texture2D>("player");
             pixel = Content.Load<Texture2D>("pixel");
+			Debug.pixel = pixel;
         }
 
 
@@ -66,8 +66,9 @@ namespace Vamp
 			GameObject a = new GameObject(
 					new Vector2(56.0f, 67.0f),
 					new Vector2(32.0f, 32.0f),
+					new Vector2(1, 1),
 					new Collider(false, Shape.Box));
-			PhysicsSystem system = new PhysicsSystem();
+			CollisionSystem system = new CollisionSystem();
 			Overlap overlap = system.Check(a, player);
 			overlap.Solve();
 			
@@ -75,11 +76,14 @@ namespace Vamp
 
             //spriteBatch.Draw(test, Vector2.Zero, null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
             spriteBatch.Draw(pixel, player.Position, null, 
-					overlap.Depth < 0 ? Color.Red : Color.Green, 
-					0, Vector2.Zero, player.Scale * 2, SpriteEffects.None, 0);
+					overlap ? Color.Red : Color.Green, 
+					0, Vector2.Zero, player.Dimension * player.Scale * 2, SpriteEffects.None, 0);
 
             spriteBatch.Draw(pixel, a.Position, null, Color.Black, 
-					0, Vector2.Zero, a.Scale * 2, SpriteEffects.None, 0);
+					0, Vector2.Zero, player.Dimension * a.Scale * 2, SpriteEffects.None, 0);
+			a.DrawCollider(spriteBatch);
+			player.DrawCollider(spriteBatch);
+
             spriteBatch.End();
 
             base.Draw(time);

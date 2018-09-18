@@ -15,7 +15,7 @@ namespace Vamp
 	}
 
 	// This class handles and stores the information about Overlaps.
-	public class Overlap
+	public struct Overlap
 	{
 		// The GameObjects involved in the Overlap.
 		public GameObject a, b;
@@ -33,10 +33,15 @@ namespace Vamp
 			this.depth = float.MaxValue;
 		}
 
+		public static implicit operator bool(Overlap c)
+		{
+			return !object.ReferenceEquals(c, null) && c.depth > 0;
+		}
+
 		// Moves the two GameObjects (a, b) out of eachother 
 		public void Solve()
 		{
-			if (depth < 0)
+			if (!this)
 				return;
 
 			// This is kinda a dumb way to do it.
@@ -50,19 +55,27 @@ namespace Vamp
 			a.Position += normal * depth * a_mass * inverseTotalMass;
 			b.Position -= normal * depth * b_mass * inverseTotalMass;
 		}
-
-		public float Depth { get { return depth; } set { depth = value; } }
-		public Vector2 Normal { get { return normal; } set { normal = value; } }
 	};
 
 	// Holds all possible overlaps. TODO
-	public class PhysicsSystem
+	public class CollisionSystem
 	{
 		private List<GameObject> gameObjects;
 
-		public PhysicsSystem()
+		public CollisionSystem()
 		{
 			gameObjects = new List<GameObject>();
+		}
+
+		// Add a GameObject to the list of objects to check.
+		public void Add(GameObject obj)
+		{
+			gameObjects.Add(obj);
+		}
+
+		public void CheckAll()
+		{
+			
 		}
 
 		// Checks if a and b overlap and if it does generates a valid Overlap.
@@ -82,8 +95,8 @@ namespace Vamp
 				float projected_distance = 
 					Math.Abs(Vector2.Dot(distance, normal));
 				float projected_limit = 
-					Math.Abs(b.Collider.Project(b.Scale,  normal)) + 
-					Math.Abs(a.Collider.Project(a.Scale, -normal));
+					Math.Abs(b.Collider.Project(b.Size(),  normal)) + 
+					Math.Abs(a.Collider.Project(a.Size(), -normal));
 				float depth = projected_limit - projected_distance;
 
 				// They overlap.
@@ -117,17 +130,20 @@ namespace Vamp
 		}
 
 		// Projects the Collider like if it was in 1 dimensions.
-		public float Project(Vector2 Scale, Vector2 normal)
+		public float Project(Vector2 Size, Vector2 normal)
 		{
 			float result;
 			if (shape == Shape.Box)
 			{
 				result = Vector2.Dot(normal, 
-						new Vector2(Scale.X * Math.Sign(normal.X), Scale.Y * Math.Sign(normal.Y)));
+						new Vector2(
+							Size.X * Math.Sign(normal.X), 
+							Size.Y * Math.Sign(normal.Y)
+						));
 			}
 			else 
 			{
-				result = Vector2.Dot(Scale.X * normal, normal);
+				result = Vector2.Dot(Size.X * normal, normal);
 			}
 			return result;
 		}
