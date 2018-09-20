@@ -16,6 +16,7 @@ namespace Vamp
         Player player;
 
 		Room room;
+		List<Attack> attacks;
         
         public VampGame()
         {
@@ -29,6 +30,7 @@ namespace Vamp
             player = new Player(new Vector2(160, 160));
 			room = new Room(1, 1, 7, 6);
 			
+			attacks = new List<Attack>();
             base.Initialize();
         }
 
@@ -56,8 +58,13 @@ namespace Vamp
                 Exit();
 			}
 
-            player.Update(time, Keyboard.GetState());
 			room.Overlap(player);
+            player.Update(time, Keyboard.GetState(), attacks);
+			foreach (Attack attack in attacks)
+			{
+				attack.Update(time);
+				room.Overlap(attack);
+			}
 
             base.Update(time);
         }
@@ -83,6 +90,11 @@ namespace Vamp
 			room.DebugDraw(spriteBatch);
 
 			player.DrawCollider(spriteBatch);
+
+			foreach (Attack attack in attacks)
+			{
+				spriteBatch.Draw(pixel, attack.Position - attack.Size(), null, Color.Blue, 0, Vector2.Zero, attack.Dimension * attack.Scale * 2, SpriteEffects.None, 0);
+			}
 
             spriteBatch.End();
 

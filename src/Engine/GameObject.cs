@@ -37,7 +37,7 @@ namespace Vamp
 			this.collider = collider;
         }
 
-        // Empty Update function to allow all object to update
+        // Empty Update function to allow all objects to update
         public void Update () {}
 
 		// Calcuates the size of the object.
