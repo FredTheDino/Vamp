@@ -65,12 +65,11 @@ namespace Vamp
 		public void Overlap(GameObject go)
 		{
 			Overlap overlap; 
-			CollisionSystem system = new CollisionSystem();
 			foreach (Tile tile in tiles)
 			{
 				if (tile.Collider == null)
 					continue;
-				overlap = system.Check(tile, go);
+				overlap = Collider.Check(tile, go);
 				overlap.Solve();
 			}
 		}

@@ -57,24 +57,39 @@ namespace Vamp
 		}
 	};
 
-	// Holds all possible overlaps. TODO
-	public class CollisionSystem
+	// Any GameObject that can collide has this.
+	public class Collider
 	{
-		private List<GameObject> gameObjects;
+		private Shape shape;
+		private bool movable;
 
-		public CollisionSystem()
+		public Collider(bool movable=false, Shape shape=Shape.Box) 
 		{
-			gameObjects = new List<GameObject>();
+			this.shape = shape;
+			this.movable = movable;
 		}
 
-		// Add a GameObject to the list of objects to check.
-		public void Add(GameObject obj)
+		// Projects the Collider like if it was in 1 dimensions.
+		public float Project(Vector2 Size, Vector2 normal)
 		{
-			gameObjects.Add(obj);
+			float result;
+			if (shape == Shape.Box)
+			{
+				result = Vector2.Dot(normal, 
+						new Vector2(
+							Size.X * Math.Sign(normal.X), 
+							Size.Y * Math.Sign(normal.Y)
+						));
+			}
+			else 
+			{
+				result = Vector2.Dot(Size.X * normal, normal);
+			}
+			return result;
 		}
-
+	
 		// Checks if a and b overlap and if it does generates a valid Overlap.
-		public Overlap Check(GameObject a, GameObject b)
+		public static Overlap Check(GameObject a, GameObject b)
 		{
 			Overlap overlap = new Overlap(a, b);
 			Vector2 distance = a.Position - b.Position;
@@ -108,38 +123,6 @@ namespace Vamp
 			}
 
 			return overlap;
-		}
-	}
-
-	// Any GameObject that can collide has this.
-	public class Collider
-	{
-		private Shape shape;
-		private bool movable;
-
-		public Collider(bool movable=false, Shape shape=Shape.Box) 
-		{
-			this.shape = shape;
-			this.movable = movable;
-		}
-
-		// Projects the Collider like if it was in 1 dimensions.
-		public float Project(Vector2 Size, Vector2 normal)
-		{
-			float result;
-			if (shape == Shape.Box)
-			{
-				result = Vector2.Dot(normal, 
-						new Vector2(
-							Size.X * Math.Sign(normal.X), 
-							Size.Y * Math.Sign(normal.Y)
-						));
-			}
-			else 
-			{
-				result = Vector2.Dot(Size.X * normal, normal);
-			}
-			return result;
 		}
 
 		public Shape Shape { get { return shape; } set { shape = value; }}
