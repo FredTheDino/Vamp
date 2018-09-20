@@ -12,7 +12,7 @@ namespace Vamp
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        Texture2D test, playersprite;
+        Texture2D test, playersprite, pixel;
         Player player;
         
         public VampGame()
@@ -25,7 +25,7 @@ namespace Vamp
         {
             // TODO: Add your initialization logic here
             player = new Player(new Vector2(50, 50));
-
+			
             base.Initialize();
         }
 
@@ -35,6 +35,8 @@ namespace Vamp
             spriteBatch = new SpriteBatch(GraphicsDevice);
             test = Content.Load<Texture2D>("test");
             playersprite = Content.Load<Texture2D>("player");
+            pixel = Content.Load<Texture2D>("pixel");
+			Debug.pixel = pixel;
         }
 
 
@@ -45,8 +47,11 @@ namespace Vamp
 
         protected override void Update(GameTime time)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || 
+				Keyboard.GetState().IsKeyDown(Keys.Escape))
+			{
                 Exit();
+			}
 
             player.Update(time, Keyboard.GetState());
 
@@ -57,10 +62,27 @@ namespace Vamp
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
+			// TEMPORARY!
+			GameObject a = new GameObject(
+					new Vector2(56.0f, 67.0f),
+					new Vector2(32.0f, 32.0f),
+					new Vector2(1, 1),
+					new Collider(false, Shape.Box));
+			CollisionSystem system = new CollisionSystem();
+			Overlap overlap = system.Check(a, player);
+			overlap.Solve();
+			
             spriteBatch.Begin();
 
-            spriteBatch.Draw(test, Vector2.Zero, null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
-            spriteBatch.Draw(playersprite, player.Position, null, Color.White, 0, Vector2.Zero, player.Scale, SpriteEffects.None, 0);
+            //spriteBatch.Draw(test, Vector2.Zero, null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
+            spriteBatch.Draw(pixel, player.Position, null, 
+					overlap ? Color.Red : Color.Green, 
+					0, Vector2.Zero, player.Dimension * player.Scale * 2, SpriteEffects.None, 0);
+
+            spriteBatch.Draw(pixel, a.Position, null, Color.Black, 
+					0, Vector2.Zero, player.Dimension * a.Scale * 2, SpriteEffects.None, 0);
+			a.DrawCollider(spriteBatch);
+			player.DrawCollider(spriteBatch);
 
             spriteBatch.End();
 

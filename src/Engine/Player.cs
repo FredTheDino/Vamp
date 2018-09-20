@@ -9,7 +9,7 @@ namespace Vamp
         private Vector2 velocity;
 
         // Main constructor
-        public Player (Vector2 position) : base(position, new Vector2(1,1), null)
+        public Player (Vector2 position) : base(position, new Vector2(32,32), new Vector2(1, 1), new Collider(true, Shape.Circle))
         {
             velocity = new Vector2();
         }
