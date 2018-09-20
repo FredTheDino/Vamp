@@ -73,23 +73,17 @@ namespace Vamp
 			gameObjects.Add(obj);
 		}
 
-		public void CheckAll()
-		{
-			
-		}
-
 		// Checks if a and b overlap and if it does generates a valid Overlap.
 		public Overlap Check(GameObject a, GameObject b)
 		{
+			Overlap overlap = new Overlap(a, b);
 			Vector2 distance = a.Position - b.Position;
-
 			// Find all potential normals.
 			Vector2[] normals = new Vector2[] {
 				new Vector2( 1,  0), new Vector2( 0,  1),
 				Vector2.Normalize(distance)
 			};
 
-			Overlap overlap = new Overlap(a, b);
 			foreach (Vector2 normal in normals)
 			{
 				float projected_distance = 

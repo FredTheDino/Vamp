@@ -20,10 +20,10 @@ namespace Vamp
 		private TileType type;
 		public static float tileSize = 32;
 
-		public Tile(int x, int y, TileType type) : base(
-				new Vector2(x * 32, y * 32), new Vector2(32, 32), new Vector2(1, 1))
+		public Tile(int x, int y, TileType type) : 
+			base(new Vector2(x * Tile.tileSize * 2, y * Tile.tileSize * 2), new Vector2(Tile.tileSize, Tile.tileSize), new Vector2(1, 1))
 		{
-			if (type != TileType.Floor)
+			if (type == TileType.Floor)
 			{
 				collider = null;
 			}
@@ -61,6 +61,28 @@ namespace Vamp
 			}
 		}
 
+
+		public void Overlap(GameObject go)
+		{
+			Overlap overlap; 
+			CollisionSystem system = new CollisionSystem();
+			foreach (Tile tile in tiles)
+			{
+				if (tile.Collider == null)
+					continue;
+				overlap = system.Check(tile, go);
+				overlap.Solve();
+			}
+		}
+
+		public void DebugDraw(SpriteBatch batch)
+		{
+			foreach (Tile tile in tiles)
+			{
+				tile.DrawCollider(batch);
+			}
+		}
+
 		public void Draw(SpriteBatch batch, Texture2D texture)
 		{
 			foreach (Tile tile in tiles)
@@ -68,7 +90,6 @@ namespace Vamp
 				batch.Draw(texture, tile.Position - tile.Size(), null, 
 					tile.Type == TileType.Wall ? Color.White : Color.Red, 
 					0, Vector2.Zero, tile.Size() * 2, SpriteEffects.None, 0);
-				tile.DrawCollider(batch);
 			}
 		}
 	}

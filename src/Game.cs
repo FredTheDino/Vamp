@@ -26,8 +26,8 @@ namespace Vamp
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            player = new Player(new Vector2(50, 50));
-			room = new Room(1, 1, 7, 7);
+            player = new Player(new Vector2(160, 160));
+			room = new Room(1, 1, 7, 6);
 			
             base.Initialize();
         }
@@ -57,6 +57,7 @@ namespace Vamp
 			}
 
             player.Update(time, Keyboard.GetState());
+			room.Overlap(player);
 
             base.Update(time);
         }
@@ -70,28 +71,19 @@ namespace Vamp
 
 			// TEMPORARY!
 			counter += (float) time.ElapsedGameTime.TotalSeconds;
-			GameObject a = new GameObject(
-					new Vector2(56.0f, 84.0f),
-					new Vector2(32.0f, 32.0f + 16.0f * (float) Math.Sin(counter)),
-					new Vector2(1, 1),
-					new Collider(false, Shape.Box));
 			CollisionSystem system = new CollisionSystem();
-			Overlap overlap = system.Check(a, player);
-			overlap.Solve();
 			
             spriteBatch.Begin();
 
             //spriteBatch.Draw(test, Vector2.Zero, null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
-            spriteBatch.Draw(pixel, player.Position - player.Size(), null, 
-					overlap ? Color.Red : Color.Green, 
-					0, Vector2.Zero, player.Size() * 2, SpriteEffects.None, 0);
-
-            spriteBatch.Draw(pixel, a.Position - a.Size(), null, Color.Black, 
-					0, Vector2.Zero, a.Size() * 2, SpriteEffects.None, 0);
-
 			room.Draw(spriteBatch, pixel);
 
-			a.DrawCollider(spriteBatch);
+            spriteBatch.Draw(pixel, player.Position - player.Size(), null, 
+					Color.Red, 
+					0, Vector2.Zero, player.Size() * 2, SpriteEffects.None, 0);
+
+			room.DebugDraw(spriteBatch);
+
 			player.DrawCollider(spriteBatch);
 
             spriteBatch.End();

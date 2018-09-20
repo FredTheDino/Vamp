@@ -33,12 +33,9 @@ namespace Vamp
 			Vector2 edge = end - start;
 			float angle = (float) Math.Atan2(edge.Y, edge.X);
 			batch.Draw(
-					pixel, 
-					start,
-					null,
-					color, 
-					angle, 
-					Vector2.Zero,
+					pixel, start,
+					null, color, 
+					angle, Vector2.Zero,
 					new Vector2(edge.Length(), size),
 					SpriteEffects.None, 0);
 
