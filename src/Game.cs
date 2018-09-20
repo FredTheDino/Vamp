@@ -14,6 +14,7 @@ namespace Vamp
         SpriteBatch spriteBatch;
         Texture2D test, playersprite, pixel;
         Player player;
+		List<Attack> attacks;
         
         public VampGame()
         {
@@ -25,7 +26,7 @@ namespace Vamp
         {
             // TODO: Add your initialization logic here
             player = new Player(new Vector2(50, 50));
-			
+			attacks = new List<Attack>();
             base.Initialize();
         }
 
@@ -53,7 +54,11 @@ namespace Vamp
                 Exit();
 			}
 
-            player.Update(time, Keyboard.GetState());
+            player.Update(time, Keyboard.GetState(), attacks);
+			foreach (Attack attack in attacks)
+			{
+				attack.Update(time);
+			}
 
             base.Update(time);
         }
@@ -83,6 +88,11 @@ namespace Vamp
 					0, Vector2.Zero, player.Dimension * a.Scale * 2, SpriteEffects.None, 0);
 			a.DrawCollider(spriteBatch);
 			player.DrawCollider(spriteBatch);
+
+			foreach (Attack attack in attacks)
+			{
+				spriteBatch.Draw(pixel, attack.Position, null, Color.Blue, 0, Vector2.Zero, attack.Dimension * attack.Scale * 2, SpriteEffects.None, 0);
+			}
 
             spriteBatch.End();
 

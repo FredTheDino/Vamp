@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
 
 namespace Vamp
 {
@@ -36,23 +37,23 @@ namespace Vamp
             }
 			if (keyboardState.IsKeyDown(Keys.Up))
 			{
-				Attack attack = new Attack(Position, new Vector2(0,-200), new Vector2(1,1), new Collider(true, Shape.Circle), 5f);
-				attacks.add(attack);
+				Attack attack = new Attack(Position, new Vector2(0,-200), new Vector2(32,32), new Vector2(1,1), new Collider(true, Shape.Circle), 5f);
+				attacks.Add(attack);
 			}
 			if (keyboardState.IsKeyDown(Keys.Right))
 			{
-				Attack attack = new Attack(Position, new Vector2(200,0), new Vector2(1,1), new Collider(true, Shape.Circle), 5f);
-				attacks.add(attack);
+				Attack attack = new Attack(Position, new Vector2(200,0), new Vector2(32,32), new Vector2(1,1), new Collider(true, Shape.Circle), 5f);
+				attacks.Add(attack);
 			}
 			if (keyboardState.IsKeyDown(Keys.Down))
 			{
-				Attack attack = new Attack(Position, new Vector2(0,200), new Vector2(1,1), new Collider(true, Shape.Circle), 5f);
-				attacks.add(attack);
+				Attack attack = new Attack(Position, new Vector2(0,200), new Vector2(32,32), new Vector2(1,1), new Collider(true, Shape.Circle), 5f);
+				attacks.Add(attack);
 			}
 			if (keyboardState.IsKeyDown(Keys.Left))
 			{
-				Attack attack = new Attack(Position, new Vector2(-200,0), new Vector2(1,1), new Collider(true, Shape.Circle), 5f);
-				attacks.add(attack);
+				Attack attack = new Attack(Position, new Vector2(-200,0), new Vector2(32,32), new Vector2(1,1), new Collider(true, Shape.Circle), 5f);
+				attacks.Add(attack);
 			}
             // Update position
             if (velocity.X != 0 && velocity.Y != 0) velocity.Normalize();
