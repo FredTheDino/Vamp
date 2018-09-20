@@ -9,15 +9,23 @@ namespace Vamp
         // The players velocity
         private Vector2 velocity;
 
+		// The players firerate and elapsedtime from last fire
+		private float firerate, elapsedTime;
+
         // Main constructor
         public Player (Vector2 position) : base(position, new Vector2(32,32), new Vector2(1, 1), new Collider(true, Shape.Circle))
         {
             velocity = new Vector2();
+			firerate = 2f;
+			elapsedTime = firerate;
         }
 
         // Update the player every frame
         public void Update (GameTime gameTime, KeyboardState keyboardState, List<Attack> attacks)
         {
+			// Add time to the elapsed time
+			elapsedTime += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
             // Read keyboard input
             if (keyboardState.IsKeyDown(Keys.W))
             {
@@ -35,25 +43,29 @@ namespace Vamp
             {
                 velocity += new Vector2(-1, 0);
             }
-			if (keyboardState.IsKeyDown(Keys.Up))
+			if (keyboardState.IsKeyDown(Keys.Up) && elapsedTime > 1 / firerate)
 			{
 				Attack attack = new Attack(Position, new Vector2(0,-200), new Vector2(32,32), new Vector2(1,1), new Collider(true, Shape.Circle), 5f);
 				attacks.Add(attack);
+				elapsedTime = 0;
 			}
-			if (keyboardState.IsKeyDown(Keys.Right))
+			if (keyboardState.IsKeyDown(Keys.Right) && elapsedTime > 1 / firerate)
 			{
 				Attack attack = new Attack(Position, new Vector2(200,0), new Vector2(32,32), new Vector2(1,1), new Collider(true, Shape.Circle), 5f);
 				attacks.Add(attack);
+				elapsedTime = 0;
 			}
-			if (keyboardState.IsKeyDown(Keys.Down))
+			if (keyboardState.IsKeyDown(Keys.Down) && elapsedTime > 1 / firerate)
 			{
 				Attack attack = new Attack(Position, new Vector2(0,200), new Vector2(32,32), new Vector2(1,1), new Collider(true, Shape.Circle), 5f);
 				attacks.Add(attack);
+				elapsedTime = 0;
 			}
-			if (keyboardState.IsKeyDown(Keys.Left))
+			if (keyboardState.IsKeyDown(Keys.Left) && elapsedTime > 1 / firerate)
 			{
 				Attack attack = new Attack(Position, new Vector2(-200,0), new Vector2(32,32), new Vector2(1,1), new Collider(true, Shape.Circle), 5f);
 				attacks.Add(attack);
+				elapsedTime = 0;
 			}
             // Update position
             if (velocity.X != 0 && velocity.Y != 0) velocity.Normalize();
