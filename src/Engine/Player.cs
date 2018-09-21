@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
+using System;
 
 namespace Vamp
 {
@@ -9,8 +10,8 @@ namespace Vamp
         // The players velocity
         private Vector2 velocity;
 
-		// The players firerate and elapsedtime from last fire
-		private float firerate, elapsedTime;
+		// The players firerate, elapsedtime from last fire and speed
+		private float firerate, elapsedTime, speed;
 
         // Main constructor
         public Player (Vector2 position) : base(position, new Vector2(32,32), new Vector2(1, 1), new Collider(true, Shape.Circle))
@@ -18,6 +19,7 @@ namespace Vamp
             velocity = new Vector2();
 			firerate = 2f;
 			elapsedTime = firerate;
+			speed = 0;
         }
 
         // Update the player every frame
@@ -25,54 +27,86 @@ namespace Vamp
         {
 			// Add time to the elapsed time
 			elapsedTime += (float)gameTime.ElapsedGameTime.TotalSeconds;
+			
+			// Initialize acceleration
+			Vector2 acceleration = new Vector2();
 
             // Read keyboard input
             if (keyboardState.IsKeyDown(Keys.W))
             {
-                velocity += new Vector2(0,-1);
+                acceleration += new Vector2(0,-1);
             }
             if (keyboardState.IsKeyDown(Keys.D))
             {
-                velocity += new Vector2(1, 0);
+                acceleration += new Vector2(1, 0);
             }
             if (keyboardState.IsKeyDown(Keys.S))
             {
-                velocity += new Vector2(0, 1);
+                acceleration += new Vector2(0, 1);
             }
             if (keyboardState.IsKeyDown(Keys.A))
             {
-                velocity += new Vector2(-1, 0);
+                acceleration += new Vector2(-1, 0);
             }
 			if (keyboardState.IsKeyDown(Keys.Up) && elapsedTime > 1 / firerate)
 			{
-				Attack attack = new Attack(Position, new Vector2(0,-200), new Vector2(32,32), new Vector2(1,1), new Collider(true, Shape.Circle), 5f);
+				Attack attack = new Attack(Position, new Vector2(0,-500), new Vector2(32,32), new Vector2(1,1), new Collider(true, Shape.Circle), 5f);
 				attacks.Add(attack);
 				elapsedTime = 0;
 			}
 			if (keyboardState.IsKeyDown(Keys.Right) && elapsedTime > 1 / firerate)
 			{
-				Attack attack = new Attack(Position, new Vector2(200,0), new Vector2(32,32), new Vector2(1,1), new Collider(true, Shape.Circle), 5f);
+				Attack attack = new Attack(Position, new Vector2(500,0), new Vector2(32,32), new Vector2(1,1), new Collider(true, Shape.Circle), 5f);
 				attacks.Add(attack);
 				elapsedTime = 0;
 			}
 			if (keyboardState.IsKeyDown(Keys.Down) && elapsedTime > 1 / firerate)
 			{
-				Attack attack = new Attack(Position, new Vector2(0,200), new Vector2(32,32), new Vector2(1,1), new Collider(true, Shape.Circle), 5f);
+				Attack attack = new Attack(Position, new Vector2(0,500), new Vector2(32,32), new Vector2(1,1), new Collider(true, Shape.Circle), 5f);
 				attacks.Add(attack);
 				elapsedTime = 0;
 			}
 			if (keyboardState.IsKeyDown(Keys.Left) && elapsedTime > 1 / firerate)
 			{
-				Attack attack = new Attack(Position, new Vector2(-200,0), new Vector2(32,32), new Vector2(1,1), new Collider(true, Shape.Circle), 5f);
+				Attack attack = new Attack(Position, new Vector2(-500,0), new Vector2(32,32), new Vector2(1,1), new Collider(true, Shape.Circle), 5f);
 				attacks.Add(attack);
 				elapsedTime = 0;
 			}
             // Update position
-            if (velocity.X != 0 && velocity.Y != 0) velocity.Normalize();
+            if (acceleration.LengthSquared() != 0) acceleration.Normalize();	
 
-            Position += velocity * 400 * (float)gameTime.ElapsedGameTime.TotalSeconds;
+			float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            velocity = Vector2.Zero;
+			float accLength = 15000;
+			float friction = 0.35f;
+			float maxSpeed = 500;
+			float minSpeed = 4000 * dt;
+
+			velocity += acceleration * accLength * dt;
+			velocity -= velocity * (float) Math.Pow(dt, friction);
+			
+			if (velocity.LengthSquared() > maxSpeed * maxSpeed)
+			{ 
+				velocity = Vector2.Normalize(velocity) * maxSpeed;
+			}
+			else if (acceleration.LengthSquared() == 0)
+			{
+				if (velocity.LengthSquared() < minSpeed * minSpeed)
+				{
+					velocity *= 0;
+				}
+			}
+
+			Console.WriteLine(velocity);
+
+            Position += velocity * dt;
         }
+
+		float Clamp (float n, float min, float max)
+		{
+			if (n < min) return min;
+			else if (n > max) return max;
+			return n;
+		}
     }
 }
