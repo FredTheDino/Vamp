@@ -23,6 +23,7 @@ namespace Vamp
 		public Tile(int x, int y, TileType type) : 
 			base(new Vector2(x * Tile.tileSize * 2, y * Tile.tileSize * 2), new Vector2(Tile.tileSize, Tile.tileSize), new Vector2(1, 1))
 		{
+			this.type = type;
 			if (type == TileType.Floor)
 			{
 				collider = null;
@@ -87,7 +88,7 @@ namespace Vamp
 			foreach (Tile tile in tiles)
 			{
 				batch.Draw(texture, tile.Position - tile.Size(), null, 
-					tile.Type == TileType.Wall ? Color.White : Color.Red, 
+					tile.Type == TileType.Wall ? Color.White : Color.Green, 
 					0, Vector2.Zero, tile.Size() * 2, SpriteEffects.None, 0);
 			}
 		}

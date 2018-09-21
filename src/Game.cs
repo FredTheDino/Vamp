@@ -16,6 +16,7 @@ namespace Vamp
         Player player;
 
 		Room room;
+		Camera camera;
 		List<Attack> attacks;
         
         public VampGame()
@@ -31,6 +32,9 @@ namespace Vamp
 			room = new Room(1, 1, 7, 6);
 			
 			attacks = new List<Attack>();
+
+			Rectangle viewRect = GraphicsDevice.Viewport.Bounds;
+			camera = new Camera(player, new Vector2(viewRect.Width, viewRect.Height) * 0.5f);
             base.Initialize();
         }
 
@@ -58,13 +62,17 @@ namespace Vamp
                 Exit();
 			}
 
-			room.Overlap(player);
+			
             player.Update(time, Keyboard.GetState(), attacks);
+
+			room.Overlap(player);
 			foreach (Attack attack in attacks)
 			{
 				attack.Update(time);
 				room.Overlap(attack);
 			}
+
+			camera.Update(time);
 
             base.Update(time);
         }
@@ -74,11 +82,11 @@ namespace Vamp
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-
-
 			// TEMPORARY!
+
 			counter += (float) time.ElapsedGameTime.TotalSeconds;
-            spriteBatch.Begin();
+            spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, 
+					camera.ViewMatrix);
 
             //spriteBatch.Draw(test, Vector2.Zero, null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
 			room.Draw(spriteBatch, pixel);
@@ -93,7 +101,8 @@ namespace Vamp
 
 			foreach (Attack attack in attacks)
 			{
-				spriteBatch.Draw(pixel, attack.Position - attack.Size(), null, Color.Blue, 0, Vector2.Zero, attack.Dimension * attack.Scale * 2, SpriteEffects.None, 0);
+				spriteBatch.Draw(pixel, attack.Position - attack.Size(), null, 
+						Color.Blue, 0, Vector2.Zero, attack.Dimension * attack.Scale * 2, SpriteEffects.None, 0);
 			}
 
             spriteBatch.End();
