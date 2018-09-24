@@ -72,6 +72,7 @@ namespace Vamp
 				attacks.Add(attack);
 				elapsedTime = 0;
 			}
+
             // Update position
             if (acceleration.LengthSquared() != 0) acceleration.Normalize();	
 
@@ -97,16 +98,7 @@ namespace Vamp
 				}
 			}
 
-			Console.WriteLine(velocity);
-
             Position += velocity * dt;
         }
-
-		float Clamp (float n, float min, float max)
-		{
-			if (n < min) return min;
-			else if (n > max) return max;
-			return n;
-		}
     }
 }
