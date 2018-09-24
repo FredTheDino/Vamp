@@ -10,8 +10,8 @@ namespace Vamp
         // The players velocity
         private Vector2 velocity;
 
-		// The players firerate, elapsedtime from last fire and speed
-		private float firerate, elapsedTime, speed;
+		// The players firerate, elapsedtime from last fire, speed and its attacks aliveTime
+		private float firerate, elapsedTime, speed, attackAliveTime;
 
         // Main constructor
         public Player (Vector2 position) : base(position, new Vector2(32,32), new Vector2(1, 1), new Collider(true, Shape.Circle))
@@ -20,6 +20,7 @@ namespace Vamp
 			firerate = 2f;
 			elapsedTime = firerate;
 			speed = 0;
+			attackAliveTime = 1f;
         }
 
         // Update the player every frame
@@ -50,25 +51,25 @@ namespace Vamp
             }
 			if (keyboardState.IsKeyDown(Keys.Up) && elapsedTime > 1 / firerate)
 			{
-				Attack attack = new Attack(Position, new Vector2(0,-500), new Vector2(32,32), new Vector2(1,1), new Collider(true, Shape.Circle), 5f);
+				Attack attack = new Attack(Position, new Vector2(0,-500), new Vector2(32,32), new Vector2(1,1), new Collider(true, Shape.Circle), attackAliveTime);
 				attacks.Add(attack);
 				elapsedTime = 0;
 			}
 			if (keyboardState.IsKeyDown(Keys.Right) && elapsedTime > 1 / firerate)
 			{
-				Attack attack = new Attack(Position, new Vector2(500,0), new Vector2(32,32), new Vector2(1,1), new Collider(true, Shape.Circle), 5f);
+				Attack attack = new Attack(Position, new Vector2(500,0), new Vector2(32,32), new Vector2(1,1), new Collider(true, Shape.Circle), attackAliveTime);
 				attacks.Add(attack);
 				elapsedTime = 0;
 			}
 			if (keyboardState.IsKeyDown(Keys.Down) && elapsedTime > 1 / firerate)
 			{
-				Attack attack = new Attack(Position, new Vector2(0,500), new Vector2(32,32), new Vector2(1,1), new Collider(true, Shape.Circle), 5f);
+				Attack attack = new Attack(Position, new Vector2(0,500), new Vector2(32,32), new Vector2(1,1), new Collider(true, Shape.Circle), attackAliveTime);
 				attacks.Add(attack);
 				elapsedTime = 0;
 			}
 			if (keyboardState.IsKeyDown(Keys.Left) && elapsedTime > 1 / firerate)
 			{
-				Attack attack = new Attack(Position, new Vector2(-500,0), new Vector2(32,32), new Vector2(1,1), new Collider(true, Shape.Circle), 5f);
+				Attack attack = new Attack(Position, new Vector2(-500,0), new Vector2(32,32), new Vector2(1,1), new Collider(true, Shape.Circle), attackAliveTime);
 				attacks.Add(attack);
 				elapsedTime = 0;
 			}

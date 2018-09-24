@@ -21,5 +21,10 @@ namespace Vamp
 			Position += velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
 			aliveTime -= (float)gameTime.ElapsedGameTime.TotalSeconds;
 		}
+
+		public bool IsAlive ()
+		{
+			return aliveTime > 0;
+		}
 	}
 }

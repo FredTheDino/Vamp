@@ -12,6 +12,12 @@ namespace Vamp
      */
     public /*abstract*/ class GameObject
     {
+		// The id counter for all GameObjects
+		private static long ID = 0;
+
+		// The id for this GameObject
+		private long id;
+
         // The position of the object
         private Vector2 position = new Vector2();
 		
@@ -26,10 +32,14 @@ namespace Vamp
 
 
         // Base constructor
-        public GameObject () {}
+        public GameObject ()
+	   	{
+			this.id = ID;
+			ID++;
+		}
 
         // Main constructor
-        public GameObject (Vector2 position, Vector2 dimension, Vector2 scale, Collider collider = null)
+        public GameObject (Vector2 position, Vector2 dimension, Vector2 scale, Collider collider = null) : this()
         {
             this.position = position;
 			this.dimension = dimension;
@@ -79,6 +89,8 @@ namespace Vamp
 		}
 
         // Getter and Setter methods
+		public long Id
+		{ get { return id; }}
         public Collider Collider 
 		{ get { return collider; } set { collider = value; } }
         public Vector2 Dimension 
