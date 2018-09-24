@@ -33,8 +33,7 @@ namespace Vamp
 			
 			attacks = new List<Attack>();
 
-			Rectangle viewRect = GraphicsDevice.Viewport.Bounds;
-			camera = new Camera(player, new Vector2(viewRect.Width, viewRect.Height) * 0.5f);
+			camera = new Camera(player, GraphicsDevice);
             base.Initialize();
         }
 
@@ -72,6 +71,8 @@ namespace Vamp
 				room.Overlap(attack);
 			}
 
+			if (Keyboard.GetState().IsKeyDown(Keys.R))
+				camera.Shake((float) time.ElapsedGameTime.TotalSeconds * 2);
 			camera.Update(time);
 
             base.Update(time);
