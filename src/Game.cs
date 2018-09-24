@@ -15,26 +15,29 @@ namespace Vamp
         Texture2D test, playersprite, pixel;
         Player player;
 
-		Room room;
 		Camera camera;
 		List<Attack> attacks;
 		GameManager gameManager;
+
+		Floor floor;
         
         public VampGame()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "..\\res";
+
+			RNG.Seed(34563377);
         }
 
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
             player = new Player(new Vector2(160, 160));
-			room = new Room(1, 1, 7, 6);
 	
 			attacks = new List<Attack>();
 			gameManager = new GameManager(attacks);
 			camera = new Camera(player, GraphicsDevice);
+			floor = new Floor(5, 2);
             
 			base.Initialize();
         }
@@ -63,16 +66,14 @@ namespace Vamp
                 Exit();
 			}
 
-			
             player.Update(time, Keyboard.GetState(), attacks);
+			floor.Update(player);
 
-			room.Overlap(player);
 			foreach (Attack attack in attacks)
 			{
 				attack.Update(time);
-				
+				// Update against the room
 				if (!attack.IsAlive()) gameManager.MarkForRemoval(attack);
-				room.Overlap(attack);
 			}
 			
 			gameManager.RemoveObjects();
@@ -98,13 +99,11 @@ namespace Vamp
 
 			counter += (float) time.ElapsedGameTime.TotalSeconds;
 
-			room.Draw(spriteBatch, pixel);
+			floor.Draw(spriteBatch, pixel);
 
             spriteBatch.Draw(pixel, player.Position - player.Size(), null, 
 					Color.Red, 
 					0, Vector2.Zero, player.Size() * 2, SpriteEffects.None, 0);
-
-			room.DebugDraw(spriteBatch);
 
 			player.DrawCollider(spriteBatch);
 
