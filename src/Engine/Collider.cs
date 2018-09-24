@@ -57,66 +57,6 @@ namespace Vamp
 		}
 	};
 
-	// Holds all possible overlaps. TODO
-	public class CollisionSystem
-	{
-		private List<GameObject> gameObjects;
-
-		public CollisionSystem()
-		{
-			gameObjects = new List<GameObject>();
-		}
-
-		// Add a GameObject to the list of objects to check.
-		public void Add(GameObject obj)
-		{
-			gameObjects.Add(obj);
-		}
-
-		public void CheckAll()
-		{
-			
-		}
-
-		// Checks if a and b overlap and if it does generates a valid Overlap.
-		public Overlap Check(GameObject a, GameObject b)
-		{
-			Vector2 distance = a.Position - b.Position;
-
-			// Find all potential normals.
-			Vector2[] normals = new Vector2[] {
-				new Vector2( 1,  0), new Vector2( 0,  1),
-				Vector2.Normalize(distance)
-			};
-
-			Overlap overlap = new Overlap(a, b);
-			foreach (Vector2 normal in normals)
-			{
-				float projected_distance = 
-					Math.Abs(Vector2.Dot(distance, normal));
-				float projected_limit = 
-					Math.Abs(b.Collider.Project(b.Size(),  normal)) + 
-					Math.Abs(a.Collider.Project(a.Size(), -normal));
-				float depth = projected_limit - projected_distance;
-
-				// They overlap.
-				if (depth < overlap.depth)
-				{
-					// Can this be refactored.
-					overlap.normal = Vector2.Dot(normal, distance) < 0 ? -normal : normal;
-					overlap.depth = depth;
-
-					if (depth < 0.0)
-					{
-						break;
-					}
-				}
-			}
-
-			return overlap;
-		}
-	}
-
 	// Any GameObject that can collide has this.
 	public class Collider
 	{
@@ -146,6 +86,43 @@ namespace Vamp
 				result = Vector2.Dot(Size.X * normal, normal);
 			}
 			return result;
+		}
+	
+		// Checks if a and b overlap and if it does generates a valid Overlap.
+		public static Overlap Check(GameObject a, GameObject b)
+		{
+			Overlap overlap = new Overlap(a, b);
+			Vector2 distance = a.Position - b.Position;
+			// Find all potential normals.
+			Vector2[] normals = new Vector2[] {
+				new Vector2( 1,  0), new Vector2( 0,  1),
+				Vector2.Normalize(distance)
+			};
+
+			foreach (Vector2 normal in normals)
+			{
+				float projected_distance = 
+					Math.Abs(Vector2.Dot(distance, normal));
+				float projected_limit = 
+					Math.Abs(b.Collider.Project(b.Size(),  normal)) + 
+					Math.Abs(a.Collider.Project(a.Size(), -normal));
+				float depth = projected_limit - projected_distance;
+
+				// They overlap.
+				if (depth < overlap.depth)
+				{
+					// Can this be refactored.
+					overlap.normal = Vector2.Dot(normal, distance) < 0 ? -normal : normal;
+					overlap.depth = depth;
+
+					if (depth < 0.0)
+					{
+						break;
+					}
+				}
+			}
+
+			return overlap;
 		}
 
 		public Shape Shape { get { return shape; } set { shape = value; }}

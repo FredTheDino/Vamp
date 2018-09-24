@@ -19,16 +19,16 @@ namespace Vamp
 		private long id;
 
         // The position of the object
-        private Vector2 position = new Vector2();
+        protected Vector2 position = new Vector2();
 		
 		// The dimensions of the object.
-        private Vector2 dimension = new Vector2(1, 1);
+        protected Vector2 dimension = new Vector2(1, 1);
 
         // The scale of the object
-        private Vector2 scale = new Vector2(1, 1);
+        protected Vector2 scale = new Vector2(1, 1);
 		
         // The attached collider
-        private Collider collider = null;
+        protected Collider collider = null;
 
 
         // Base constructor
@@ -64,8 +64,8 @@ namespace Vamp
 
 			if (collider.Shape == Shape.Box)
 			{
-				Vector2 min = position;
-				Vector2 max = position + Size() * 2;
+				Vector2 min = position - Size();
+				Vector2 max = min + Size() * 2;
 				Debug.DrawLine(batch, min, new Vector2(max.X, min.Y));
 				Debug.DrawLine(batch, min, new Vector2(min.X, max.Y));
 				Debug.DrawLine(batch, max, new Vector2(max.X, min.Y));
@@ -73,7 +73,7 @@ namespace Vamp
 			}
 			else if (collider.Shape == Shape.Circle)
 			{
-				Vector2 center = position + Size();
+				Vector2 center = position;
 				float r = Size().Y;
 				Vector2 last = center + new Vector2((float) Math.Cos(0), (float) Math.Sin(0)) * r;
 				int numSegments = 32;
