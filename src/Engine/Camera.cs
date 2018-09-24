@@ -16,6 +16,8 @@ namespace Vamp
 		private float rotation;
 
 		private float shakeTimer;
+		private float speed = 4;
+		private float maxCamDistance = 100;
 
 		private Random rng;
 
@@ -40,6 +42,19 @@ namespace Vamp
 			shakeTimer += time;
 		}
 
+		private Vector2 random_unit_vector(Random rng)
+		{
+			float angle = (float) (rng.NextDouble() * Math.PI * 2);
+			Vector2 result = new Vector2((float) Math.Cos(angle), (float) Math.Sin(angle));
+			return result;
+		}
+
+		private float random_float_in_range(Random rng, float min, float max)
+		{
+			float result = (float) rng.NextDouble();
+			return (result * (max - min) + min);
+		}
+
 		public void Update(GameTime time)
 		{
 			float delta = (float) time.ElapsedGameTime.TotalSeconds;
@@ -48,7 +63,13 @@ namespace Vamp
 			Rectangle viewRect = device.Viewport.Bounds;
 			Vector2 offset = new Vector2(viewRect.Width, viewRect.Height) * 0.5f;
 			Vector2 deltaPosition = target.Position - position;
-			position += deltaPosition * delta;
+			position += deltaPosition * Math.Min(delta * speed, 1.0f);
+
+			Vector2 relative_position = position - target.Position;
+			if (relative_position.LengthSquared() > maxCamDistance * maxCamDistance)
+			{
+				position = target.Position + Vector2.Normalize(relative_position) * maxCamDistance;
+			}
 
 			Vector2 randomPosition = new Vector2();
 			float randomRotation = 0.0f;
@@ -56,9 +77,8 @@ namespace Vamp
 			{
 				float strength = shakeTimer * shakeTimer * shakeTimer * 30.0f;
 				strength = Math.Min(strength, 60);
-				randomPosition.X = (float) (rng.NextDouble() - 0.5) * strength;
-				randomPosition.Y = (float) (rng.NextDouble() - 0.5) * strength;
-				randomRotation = 0.0f; //(float) (rng.NextDouble() - 0.5) * strength / 10.0f;
+				randomPosition = random_unit_vector(rng) * strength;
+				randomRotation = 0.0f;
 			}
 
 			viewMatrix = 
@@ -66,10 +86,7 @@ namespace Vamp
 				Matrix.CreateRotationZ(rotation + randomRotation) *
 				Matrix.CreateTranslation(offset.X / zoom, offset.Y / zoom, 0) *
 				Matrix.CreateScale(zoom);
-
 		}
-
-
 
 		public Matrix ViewMatrix { get { return viewMatrix; } }
 		public GameObject Target { get { return target; } set { target = value; } }
