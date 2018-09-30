@@ -18,19 +18,19 @@ namespace Vamp
         public void Update (GameTime gameTime, KeyboardState keyboardState)
         {
             // Read keyboard input
-            if (keyboardState.IsKeyDown(Keys.Up))
+            if (keyboardState.IsKeyDown(Keys.W))
             {
                 velocity += new Vector2(0,-1);
             }
-            if (keyboardState.IsKeyDown(Keys.Right))
+            if (keyboardState.IsKeyDown(Keys.D))
             {
                 velocity += new Vector2(1, 0);
             }
-            if (keyboardState.IsKeyDown(Keys.Down))
+            if (keyboardState.IsKeyDown(Keys.S))
             {
                 velocity += new Vector2(0, 1);
             }
-            if (keyboardState.IsKeyDown(Keys.Left))
+            if (keyboardState.IsKeyDown(Keys.A))
             {
                 velocity += new Vector2(-1, 0);
             }
