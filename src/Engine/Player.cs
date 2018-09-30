@@ -51,26 +51,22 @@ namespace Vamp
             }
 			if (keyboardState.IsKeyDown(Keys.Up) && elapsedTime > 1 / firerate)
 			{
-				Attack attack = new Attack(Position, new Vector2(0,-500), new Vector2(32,32), new Vector2(1,1), new Collider(true, Shape.Circle), attackAliveTime);
-				attacks.Add(attack);
+				Shoot(new Vector2(0,-1), 3, 1000, attacks);
 				elapsedTime = 0;
 			}
 			if (keyboardState.IsKeyDown(Keys.Right) && elapsedTime > 1 / firerate)
 			{
-				Attack attack = new Attack(Position, new Vector2(500,0), new Vector2(32,32), new Vector2(1,1), new Collider(true, Shape.Circle), attackAliveTime);
-				attacks.Add(attack);
+				Shoot(new Vector2(1, 0), 3, 1000, attacks);
 				elapsedTime = 0;
 			}
 			if (keyboardState.IsKeyDown(Keys.Down) && elapsedTime > 1 / firerate)
 			{
-				Attack attack = new Attack(Position, new Vector2(0,500), new Vector2(32,32), new Vector2(1,1), new Collider(true, Shape.Circle), attackAliveTime);
-				attacks.Add(attack);
+				Shoot(new Vector2(0, 1), 3, 1000, attacks);
 				elapsedTime = 0;
 			}
 			if (keyboardState.IsKeyDown(Keys.Left) && elapsedTime > 1 / firerate)
 			{
-				Attack attack = new Attack(Position, new Vector2(-500,0), new Vector2(32,32), new Vector2(1,1), new Collider(true, Shape.Circle), attackAliveTime);
-				attacks.Add(attack);
+				Shoot(new Vector2(-1,0), 3, 1000, attacks);
 				elapsedTime = 0;
 			}
 
@@ -101,5 +97,24 @@ namespace Vamp
 
             Position += velocity * dt;
         }
+
+		private void Shoot (Vector2 direction, int projectiles, int projectileSpeed, List<Attack> attacks)
+		{
+			double angle = Math.Atan2(direction.Y, direction.X), fireWidth = (projectiles-1.0)/ 10;
+			if (fireWidth > 1) fireWidth = 1;
+			angle -= fireWidth/2;
+			for (int i = 0; i < projectiles; i++)
+			{
+				double shotAngle = angle + i * fireWidth / (projectiles - 0.99999);
+				Vector2 velocity = new Vector2((float) Math.Cos(shotAngle), (float) Math.Sin(shotAngle)) * projectileSpeed;
+				Attack attack = new Attack(Position,
+						velocity,
+						new Vector2(8,8),
+						new Vector2(1,1),
+						new Collider(true, Shape.Circle),
+						attackAliveTime);
+				attacks.Add(attack);
+			}
+		}
     }
 }
