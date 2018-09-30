@@ -30,7 +30,7 @@ namespace Vamp
 		{
 			this.position = new Vector2(0, 0);
 			this.offset = offset;
-			this.zoom = 1.0f;
+			this.zoom = 0.5f;
 			this.rotation = 0.0f;
 			this.target = target;
 			this.device = device;
@@ -42,18 +42,6 @@ namespace Vamp
 			shakeTimer += time;
 		}
 
-		private Vector2 random_unit_vector(Random rng)
-		{
-			float angle = (float) (rng.NextDouble() * Math.PI * 2);
-			Vector2 result = new Vector2((float) Math.Cos(angle), (float) Math.Sin(angle));
-			return result;
-		}
-
-		private float random_float_in_range(Random rng, float min, float max)
-		{
-			float result = (float) rng.NextDouble();
-			return (result * (max - min) + min);
-		}
 
 		public void Update(GameTime time)
 		{
@@ -77,7 +65,7 @@ namespace Vamp
 			{
 				float strength = shakeTimer * shakeTimer * shakeTimer * 30.0f;
 				strength = Math.Min(strength, 60);
-				randomPosition = random_unit_vector(rng) * strength;
+				randomPosition = RNG.RandomUnitVector() * strength;
 				randomRotation = 0.0f;
 			}
 
