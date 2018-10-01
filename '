@@ -10,7 +10,6 @@ namespace Vamp
 {
 	public class MapRegion
 	{
-
 		private int x, y, w, h;
 
 		public int X { get { return x; } }
@@ -18,39 +17,15 @@ namespace Vamp
 		public int W { get { return w; } }
 		public int H { get { return h; } }
 
-		public MapRegion(int x, int y, int w, int h) 
-		{
-			this.x = x;
-			this.y = y;
-			this.w = w;
-			this.h = h;
-		}
+		public MapRegion(int x, int y, int w, int h) : x(x), y(y), w(w), h(h) {}
 		
 		public MapRegion Intersection(MapRegion that)
 		{
-			int x = Math.Max(this.x, that.x) + 1;
-			int y = Math.Max(this.y, that.y) + 1;
+			int x = Math.Max(this.x, that.x);
+			int y = Math.Max(this.y, that.y);
 			int w = Math.Min(this.x + this.w, that.x + that.w) - x;
 			int h = Math.Min(this.y + this.h, that.y + that.h) - y;
-			return new MapRegion(x, y, Math.Max(w, 0), Math.Max(h, 0));
-		}
-
-		// Grows twice the ammount, since it scales in both the negative
-		// and posetive direction.
-		public void Grow(int x, int y)
-		{
-			this.x -= x * 2;
-			this.w += x * 2;
-
-			this.y -= y * 2;
-			this.h += y * 2;
-		}
-
-		public void LoopOver(Func<int, int, int> func)
-		{
-			for (int x = this.x; x < (this.x + this.w); x++)
-				for (int y = this.y; y < (this.y + this.h); y++)
-					func(x, y);
+			return new MapRegion(
 		}
 	}
 
@@ -161,31 +136,30 @@ namespace Vamp
 					room = new Room(startX, startY, w, h);
 				} while (!CanBePlaced(room));
 				rooms.Add(room);
-				Room to = room;
-				Room from = rooms[rooms.Count - 2];
+				Room lastRoom = rooms[rooms.Count - 1];
 
-				MapRegion fromRegion = from.ToRegion();
-				MapRegion toRegion   = to.ToRegion();
-				MapRegion intersect = fromRegion.Intersection(toRegion);
+				// TODO: Change these to regions.
+				int minX = Math.Max(doorX, Math.Max(room.X, lastRoom.X));
+				int maxX = Math.Max(doorX, Math.Max(room.X + room.W, lastRoom.X + lastRoom.H));
+
+				int minY = Math.Max(doorY, Math.Max(room.Y, lastRoom.Y));
+				int maxY = Math.Max(doorY, Math.Max(room.Y + room.W, lastRoom.Y + lastRoom.H));
 
 				if (direction != 2)
 				{
 					// Vertical direction, so clamp the x-axis
-					intersect.Grow(0, 1);
 				}
 				else 
 				{
 					// Horizontal direction, so clamp the y-axis
-					intersect.Grow(1, 0);
+
 				}
 
-				intersect.LoopOver((x, y) =>
-					{
-						to.SetTileAt(x, y, new Tile(x, y, TileType.Door));
-						from.SetTileAt(x, y, new Tile(x, y, TileType.Door));
-						// TODO: Figure out why this doesn't work.
-						return 0;
-					});
+
+				int x = doorX;
+				int y = doorY;
+				lastRoom.SetTileAt(x, y, new Tile(x, y, TileType.Door));
+				room.SetTileAt(x, y, new Tile(x, y, TileType.Door));
 			}
 		}
 
@@ -240,11 +214,6 @@ namespace Vamp
 					tiles.Add(new Tile(tileX, tileY, type));
 				}
 			}
-		}
-
-		public MapRegion ToRegion()
-		{
-			return new MapRegion(x, y, w, h);
 		}
 	
 		public Tile GetTileAt(int x, int y)
