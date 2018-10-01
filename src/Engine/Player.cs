@@ -10,17 +10,24 @@ namespace Vamp
         // The players velocity
         private Vector2 velocity;
 
-		// The players firerate, elapsedtime from last fire, speed and its attacks aliveTime
-		private float firerate, elapsedTime, speed, attackAliveTime;
+		// Various player stats
+		private float fireRate, attackAliveTime, shotSpeed, maxSpeed, damage, shotSpread, projectiles;
+
+		// Initalize elapsed time
+		private float elapsedTime;
 
         // Main constructor
         public Player (Vector2 position) : base(position, new Vector2(32,32), new Vector2(1, 1), new Collider(true, Shape.Circle))
         {
             velocity = new Vector2();
-			firerate = 2f;
-			elapsedTime = firerate;
-			speed = 0;
-			attackAliveTime = 1f;
+			fireRate = 4f;
+			elapsedTime = fireRate;
+			attackAliveTime = 2f;
+			shotSpeed = 1000;
+			maxSpeed = 500;
+			damage = 10;
+			shotSpread = 0.5f;
+			projectiles = 3;
         }
 
         // Update the player every frame
@@ -49,24 +56,24 @@ namespace Vamp
             {
                 acceleration += new Vector2(-1, 0);
             }
-			if (keyboardState.IsKeyDown(Keys.Up) && elapsedTime > 1 / firerate)
+			if (keyboardState.IsKeyDown(Keys.Up) && elapsedTime > 1 / fireRate)
 			{
-				Shoot(new Vector2(0,-1), 3, 1000, attacks);
+				Shoot(new Vector2(0,-1), attacks);
 				elapsedTime = 0;
 			}
-			if (keyboardState.IsKeyDown(Keys.Right) && elapsedTime > 1 / firerate)
+			if (keyboardState.IsKeyDown(Keys.Right) && elapsedTime > 1 / fireRate)
 			{
-				Shoot(new Vector2(1, 0), 3, 1000, attacks);
+				Shoot(new Vector2(1, 0), attacks);
 				elapsedTime = 0;
 			}
-			if (keyboardState.IsKeyDown(Keys.Down) && elapsedTime > 1 / firerate)
+			if (keyboardState.IsKeyDown(Keys.Down) && elapsedTime > 1 / fireRate)
 			{
-				Shoot(new Vector2(0, 1), 3, 1000, attacks);
+				Shoot(new Vector2(0, 1), attacks);
 				elapsedTime = 0;
 			}
-			if (keyboardState.IsKeyDown(Keys.Left) && elapsedTime > 1 / firerate)
+			if (keyboardState.IsKeyDown(Keys.Left) && elapsedTime > 1 / fireRate)
 			{
-				Shoot(new Vector2(-1,0), 3, 1000, attacks);
+				Shoot(new Vector2(-1,0), attacks);
 				elapsedTime = 0;
 			}
 
@@ -77,7 +84,6 @@ namespace Vamp
 
 			float accLength = 15000;
 			float friction = 0.35f;
-			float maxSpeed = 500;
 			float minSpeed = 4000 * dt;
 
 			velocity += acceleration * accLength * dt;
@@ -97,16 +103,20 @@ namespace Vamp
 
             Position += velocity * dt;
         }
-
-		private void Shoot (Vector2 direction, int projectiles, int projectileSpeed, List<Attack> attacks)
+		
+		// Function for shooting projectiles
+		private void Shoot (Vector2 direction, List<Attack> attacks)
 		{
-			double angle = Math.Atan2(direction.Y, direction.X), fireWidth = (projectiles-1.0)/ 10;
-			if (fireWidth > 1) fireWidth = 1;
-			angle -= fireWidth/2;
+			// Set up projectile spread
+			double angle = Math.Atan2(direction.Y, direction.X);
+
+			angle -= shotSpread * (projectiles - 1) / (2 * projectiles);	
+			
+			// Fire projectiles
 			for (int i = 0; i < projectiles; i++)
 			{
-				double shotAngle = angle + i * fireWidth / (projectiles - 0.99999);
-				Vector2 velocity = new Vector2((float) Math.Cos(shotAngle), (float) Math.Sin(shotAngle)) * projectileSpeed;
+				double shotAngle = angle + i * shotSpread / projectiles;
+				Vector2 velocity = new Vector2((float)Math.Cos(shotAngle), (float)Math.Sin(shotAngle)) * shotSpeed;
 				Attack attack = new Attack(Position,
 						velocity,
 						new Vector2(8,8),
