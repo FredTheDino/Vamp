@@ -12,7 +12,7 @@ namespace Vamp
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        Texture2D test, playersprite, pixel;
+        Texture2D test, playersprite, pixel, arrow;
         Player player;
 
 		Camera camera;
@@ -58,6 +58,7 @@ namespace Vamp
             test = Content.Load<Texture2D>("test");
             playersprite = Content.Load<Texture2D>("player");
             pixel = Content.Load<Texture2D>("pixel");
+			arrow = Content.Load<Texture2D>("vamp_arrow");
 			Debug.pixel = pixel;
         }
 
@@ -131,8 +132,15 @@ namespace Vamp
 
 			foreach (Attack attack in attacks)
 			{
-				spriteBatch.Draw(pixel, attack.Position - attack.Size(), null, 
-						Color.Blue, 0, Vector2.Zero, attack.Dimension * attack.Scale * 2, SpriteEffects.None, 0);
+				spriteBatch.Draw(arrow,
+					   	attack.Position - attack.Size(),
+					   	null,
+						Color.White,
+					   	attack.Rotation,
+					   	new Vector2(arrow.Width, arrow.Height) / 2,
+					   	attack.Dimension * attack.Scale * 2,
+					   	SpriteEffects.None,
+						0);
 			}
 
             spriteBatch.End();

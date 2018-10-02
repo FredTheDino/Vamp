@@ -22,7 +22,7 @@ namespace Vamp
             velocity = new Vector2();
 			fireRate = 4f;
 			elapsedTime = fireRate;
-			attackAliveTime = 2f;
+			attackAliveTime = 100; //2f;
 			shotSpeed = 1000;
 			maxSpeed = 500;
 			damage = 10;
@@ -119,8 +119,8 @@ namespace Vamp
 				Vector2 velocity = new Vector2((float)Math.Cos(shotAngle), (float)Math.Sin(shotAngle)) * shotSpeed;
 				Attack attack = new Attack(Position,
 						velocity,
-						new Vector2(8,8),
 						new Vector2(1,1),
+						new Vector2(.2f,.2f),
 						new Collider(true, Shape.Circle),
 						attackAliveTime);
 				attacks.Add(attack);

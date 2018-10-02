@@ -13,7 +13,7 @@ namespace Vamp
 		{
 			this.velocity = velocity;
 			this.aliveTime = aliveTime;
-			this.rotation = (float) Math.Atan2(velocity.Y, velocity.X);
+			this.rotation = (float) Math.Atan2(velocity.X, -velocity.Y);
 		}
 
 		public void Update (GameTime gameTime)
@@ -26,5 +26,8 @@ namespace Vamp
 		{
 			return aliveTime > 0;
 		}
+
+		public float Rotation
+		{ get { return rotation; } }
 	}
 }
