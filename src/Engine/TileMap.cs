@@ -8,7 +8,52 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Vamp
 {
-	enum TileType
+	public class MapRegion
+	{
+		private int x, y, w, h;
+
+		public int X { get { return x; } }
+		public int Y { get { return y; } }
+		public int W { get { return w; } }
+		public int H { get { return h; } }
+
+		public MapRegion(int x, int y, int w, int h) 
+		{
+			this.x = x;
+			this.y = y;
+			this.w = w;
+			this.h = h;
+		}
+		
+		public MapRegion Intersection(MapRegion that)
+		{
+			int x = Math.Max(this.x, that.x) + 1;
+			int y = Math.Max(this.y, that.y) + 1;
+			int w = Math.Min(this.x + this.w, that.x + that.w) - x;
+			int h = Math.Min(this.y + this.h, that.y + that.h) - y;
+			return new MapRegion(x, y, Math.Max(w, 0), Math.Max(h, 0));
+		}
+
+		// Grows twice the ammount, since it scales in both the negative
+		// and posetive direction.
+		public void Grow(int x, int y)
+		{
+			this.x -= x * 2;
+			this.w += x * 2;
+
+			this.y -= y * 2;
+			this.h += y * 2;
+		}
+
+		public void LoopOver(Func<int, int, int> func)
+		{
+			for (int x = this.x; x < (this.x + this.w); x++)
+				for (int y = this.y; y < (this.y + this.h); y++)
+					func(x, y);
+		}
+	}
+
+	public enum TileType
 	{
 		Wall,
 		Floor,
@@ -16,7 +61,7 @@ namespace Vamp
 		Hazard
 	}
 
-	class Tile : GameObject
+	public class Tile : GameObject
 	{
 		private TileType type;
 		public static float tileSize = 32;
@@ -25,15 +70,15 @@ namespace Vamp
 			base(new Vector2(x * Tile.tileSize * 2, y * Tile.tileSize * 2), new Vector2(Tile.tileSize, Tile.tileSize), new Vector2(1, 1))
 		{
 			this.type = type;
-			if (type == TileType.Floor)
-			{
-				collider = null;
-			}
-			else
+			if (type == TileType.Wall)
 			{
 				collider = new Collider();
 			}
-			collider = null;
+			else
+			{
+				collider = null;
+			}
+			//collider = null;
 		}
 
 		public TileType Type { get { return type; } set { type = value; } }
@@ -49,9 +94,9 @@ namespace Vamp
 		{
 			foreach (Room b in rooms)
 			{
-				if (a.x + a.w < b.x || b.x + b.w < a.x)
+				if (a.X + a.W < b.X || b.X + b.W < a.X)
 					continue;
-				if (a.y + a.h < b.y || b.y + b.h < a.y)
+				if (a.Y + a.H < b.Y || b.Y + b.H < a.Y)
 					continue;
 				return false;
 			}
@@ -76,49 +121,76 @@ namespace Vamp
 			{
 				// Offset one so the first loop works
 				int direction = RNG.RandomIntInRange(-1, 1);
+				int doorX;
+				int doorY;
 				do
 				{
 					// TODO: Break if we're in an infinet loop.
 					// Check all posibilities.
 					direction = (direction + 1) % 3;
 
-					int startX;
-					int startY;
+					int startX, startY;
 					int offset = RNG.RandomIntInRange(-2, 2);
 					int w = RNG.RandomIntInRange(12, 19);
 					int h = RNG.RandomIntInRange(10, 15);
 					if (direction == 0)
 					{
 						// Up
-						startX = room.x + room.w / 2;
-						startY = room.y - 1;
-						startX += offset;
-						startY -= h;
+						doorX = room.X + room.W / 2;
+						doorY = room.Y - 1;
+						startX = doorX + offset;
+						startY = doorY - h;
 					}
 					else if (direction == 1)
 					{
 						// Down
-						startX = room.x + room.w / 2;
-						startY = room.y + room.h + 1;
-						startX += offset;
-						startY += 0;
+						doorX = room.X + room.W / 2;
+						doorY = room.Y + room.H + 1;
+						startX = doorX + offset;
+						startY = doorY;
 					}
 					else // if (direction == 2)
 					{
 						// Right
-						startX = room.x + room.w + 1;
-						startY = room.y + room.h / 2;
-						startX += 0;
-						startY += offset;
+						doorX = room.X + room.W + 1;
+						doorY = room.Y + room.H / 2;
+						startX = doorX;
+						startY = doorY + offset;
 					}
 					room = new Room(startX, startY, w, h);
 				} while (!CanBePlaced(room));
 				rooms.Add(room);
+				Room to = room;
+				Room from = rooms[rooms.Count - 2];
+
+				MapRegion fromRegion = from.ToRegion();
+				MapRegion toRegion   = to.ToRegion();
+				MapRegion intersect = fromRegion.Intersection(toRegion);
+
+				if (direction != 2)
+				{
+					// Vertical direction, so clamp the x-axis
+					intersect.Grow(0, 1);
+				}
+				else 
+				{
+					// Horizontal direction, so clamp the y-axis
+					intersect.Grow(1, 0);
+				}
+
+				intersect.LoopOver((x, y) =>
+					{
+						to.SetTileAt(x, y, new Tile(x, y, TileType.Door));
+						from.SetTileAt(x, y, new Tile(x, y, TileType.Door));
+						// TODO: Figure out why this doesn't work.
+						return 0;
+					});
 			}
 		}
 
 		public void Update(GameObject go)
 		{
+			// TODO: Optimize this.
 			foreach (Room room in rooms)
 			{
 				room.Update(go);
@@ -136,8 +208,14 @@ namespace Vamp
 
 	public class Room
 	{
-		List<Tile> tiles;
-		public readonly int x, y, w, h;
+		private List<Tile> tiles;
+		private readonly int x, y, w, h;
+
+		public int X { get { return x; } }
+		public int Y { get { return y; } }
+		public int W { get { return w; } }
+		public int H { get { return h; } }
+
 
 		public Room(int x, int y, int w, int h)
 		{
@@ -146,19 +224,47 @@ namespace Vamp
 			this.w = w;
 			this.h = h;
 			tiles = new List<Tile>();
-			for (int tile_x = x; tile_x <= x + w; tile_x++)
+			for (int tileX = x; tileX <= x + w; tileX++)
 			{
-				for (int tile_y = y; tile_y <= y + h; tile_y++)
+				for (int tileY = y; tileY <= y + h; tileY++)
 				{
 					TileType type;
-					if (tile_x == x || tile_x == x + w)
+					if (tileX == x || tileX == x + w)
 						type = TileType.Wall;
-					else if (tile_y == y || tile_y == y + h)
+					else if (tileY == y || tileY == y + h)
 						type = TileType.Wall;
 					else
 						type = TileType.Floor;
 							
-					tiles.Add(new Tile(tile_x, tile_y, type));
+					tiles.Add(new Tile(tileX, tileY, type));
+				}
+			}
+		}
+
+		public MapRegion ToRegion()
+		{
+			return new MapRegion(x, y, w, h);
+		}
+	
+		public Tile GetTileAt(int x, int y)
+		{
+			foreach (Tile t in tiles)
+			{
+				if (t.Position.X == x && t.Position.Y == y)
+					return t;
+			}
+			return null;
+		}
+
+		public void SetTileAt(int x, int y, Tile tile)
+		{
+			for (int i = 0; i < tiles.Count; i++)
+			{
+				Tile t = tiles[i];
+				if (t.Position.X == x * Tile.tileSize * 2 && t.Position.Y == y * Tile.tileSize * 2)
+				{
+					tiles[i] = tile;
+					return;
 				}
 			}
 		}
@@ -187,9 +293,19 @@ namespace Vamp
 		{
 			foreach (Tile tile in tiles)
 			{
+				Color c;
+				if (tile.Type == TileType.Wall)
+					c = Color.White;
+				else if (tile.Type == TileType.Floor)
+					c = Color.Green;
+				else if (tile.Type == TileType.Door)
+					c = Color.Red;
+				else
+					c = Color.Black;
+
 				batch.Draw(texture, tile.Position - tile.Size(), null, 
-					tile.Type == TileType.Wall ? Color.White : Color.Green, 
-					0, Vector2.Zero, tile.Size() * 2, SpriteEffects.None, 0);
+					c, 0, Vector2.Zero, tile.Size() * 2, 
+					SpriteEffects.None, 0);
 			}
 		}
 	}

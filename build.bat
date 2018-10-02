@@ -31,10 +31,16 @@ POPD
 ECHO  ====== Compile ====== 
 CSC -out:"%_NAME%" %_FLAGS% -lib:"%_LIB%" "%_SRC%"
 
+@if not %ErrorLevel% == 0 (
+ECHO ====== Failed ======
+	goto _END
+)
+
 if %_RUN% == YES (
 ECHO  ====== Running ======
 	%_NAME%
 )
 
+:_END
 POPD
 
