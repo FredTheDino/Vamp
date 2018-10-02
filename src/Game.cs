@@ -14,7 +14,6 @@ namespace Vamp
         SpriteBatch spriteBatch;
         Texture2D test, playersprite, pixel;
         Player player;
-
 		Camera camera;
 		List<Attack> attacks;
 		GameManager gameManager;
@@ -29,11 +28,10 @@ namespace Vamp
 			RNG.Seed(34563377);
         }
 
+		// Initialize variables
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
             player = new Player(new Vector2(160, 160));
-	
 			attacks = new List<Attack>();
 			gameManager = new GameManager(attacks);
 			camera = new Camera(player, GraphicsDevice);
@@ -42,10 +40,12 @@ namespace Vamp
 			base.Initialize();
         }
 
+		// Load Textures
         protected override void LoadContent()
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+
+			// Load sprites that are in the game
             test = Content.Load<Texture2D>("test");
             playersprite = Content.Load<Texture2D>("player");
             pixel = Content.Load<Texture2D>("pixel");
@@ -58,17 +58,22 @@ namespace Vamp
             // TODO: Unload any non ContentManager content here
         }
 
+		// Update the game (called every frame)
         protected override void Update(GameTime time)
         {
+			// Exit if escape is pressed
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || 
 				Keyboard.GetState().IsKeyDown(Keys.Escape))
 			{
                 Exit();
 			}
 
+			// Update player
             player.Update(time, Keyboard.GetState(), attacks);
+			
 			floor.Update(player);
 
+			// Update attacks
 			foreach (Attack attack in attacks)
 			{
 				attack.Update(time);
@@ -76,8 +81,10 @@ namespace Vamp
 				if (!attack.IsAlive()) gameManager.MarkForRemoval(attack);
 			}
 			
+			// Remove objects we don't want
 			gameManager.RemoveObjects();
 
+			// Test camera shake, TEMPORARY
 			if (Keyboard.GetState().IsKeyDown(Keys.R))
 				camera.Shake((float) time.ElapsedGameTime.TotalSeconds * 2);
 			camera.Update(time);
@@ -85,19 +92,19 @@ namespace Vamp
             base.Update(time);
         }
 
-		float counter;
+		// Draw the game (called every frame)
         protected override void Draw(GameTime time)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, 
+            spriteBatch.Begin(
+					SpriteSortMode.Deferred,
+					null, null, null, null, null, 
 					camera.ViewMatrix);
 
             spriteBatch.Draw(pixel, player.Position, null, 
 					Color.Green, 
 					0, Vector2.Zero, player.Dimension * player.Scale * 2, SpriteEffects.None, 0);
-
-			counter += (float) time.ElapsedGameTime.TotalSeconds;
 
 			floor.Draw(spriteBatch, pixel);
 
@@ -107,6 +114,7 @@ namespace Vamp
 
 			player.DrawCollider(spriteBatch);
 
+			// Draw attacks
 			foreach (Attack attack in attacks)
 			{
 				spriteBatch.Draw(pixel, attack.Position - attack.Size(), null, 
