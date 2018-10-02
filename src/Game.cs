@@ -37,6 +37,13 @@ namespace Vamp
 
 			attacks = new List<Attack>();
             enemies = new List<Enemy>();
+            
+            for (int i = 0; i < 20; i++)
+            {
+                int x = 160 + i * 30;
+                enemies.Add(new Enemy(new Vector2(x, 200)));
+            }
+
 			gameManager = new GameManager(attacks, enemies);
 			camera = new Camera(player, GraphicsDevice);
 			floor = new Floor(5, 2);
@@ -73,7 +80,7 @@ namespace Vamp
 
             foreach (Enemy enemy in enemies)
             {
-                enemy.Update(player, (float) time.ElapsedGameTime.TotalSeconds);
+                enemy.Update(player, (float) time.ElapsedGameTime.TotalSeconds, attacks);
                 if(!enemy.IsAlive()) gameManager.MarkForRemoval(enemy);
             }
 
