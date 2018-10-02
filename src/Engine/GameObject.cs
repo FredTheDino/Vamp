@@ -10,7 +10,7 @@ namespace Vamp
     /*
      * Main class for all objects in the game
      */
-    public /*abstract*/ class GameObject
+    public abstract class GameObject
     {
 		// The id counter for all GameObjects
 		private static long ID = 0;
