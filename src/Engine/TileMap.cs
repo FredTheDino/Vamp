@@ -10,7 +10,6 @@ namespace Vamp
 {
 	public class MapRegion
 	{
-
 		private int x, y, w, h;
 
 		public int X { get { return x; } }
@@ -71,15 +70,15 @@ namespace Vamp
 			base(new Vector2(x * Tile.tileSize * 2, y * Tile.tileSize * 2), new Vector2(Tile.tileSize, Tile.tileSize), new Vector2(1, 1))
 		{
 			this.type = type;
-			if (type == TileType.Floor)
-			{
-				collider = null;
-			}
-			else
+			if (type == TileType.Wall)
 			{
 				collider = new Collider();
 			}
-			collider = null;
+			else
+			{
+				collider = null;
+			}
+			//collider = null;
 		}
 
 		public TileType Type { get { return type; } set { type = value; } }
