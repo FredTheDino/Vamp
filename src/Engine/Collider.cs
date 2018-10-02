@@ -55,7 +55,7 @@ namespace Vamp
 			a.Position += normal * depth * a_mass * inverseTotalMass;
 			b.Position -= normal * depth * b_mass * inverseTotalMass;
 		}
-	};
+	}
 
 	// Any GameObject that can collide has this.
 	public class Collider

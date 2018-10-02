@@ -11,10 +11,13 @@ namespace Vamp
 		// Attack list
 		private List<Attack> attacks;
 
-		public GameManager (List<Attack> attacks)
+		private List<Enemy> enemies;
+
+		public GameManager (List<Attack> attacks, List<Enemy> enemies)
 		{
 			this.toRemove = new HashSet<long>();
 			this.attacks = attacks;
+			this.enemies = enemies;
 		}
 
 		// Mark a GameObject for removal
@@ -33,6 +36,15 @@ namespace Vamp
 					attacks.RemoveAt(i);
 				}
 			}
+
+			for (int i = enemies.Count - 1; i >= 0; i--)
+			{
+				if (toRemove.Contains(enemies[i].Id))
+				{
+					enemies.RemoveAt(i);
+				}
+			}
+
 			toRemove.Clear();
 		}
 	}

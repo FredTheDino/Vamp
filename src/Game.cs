@@ -17,6 +17,7 @@ namespace Vamp
 
 		Camera camera;
 		List<Attack> attacks;
+        List<Enemy> enemies;
 		GameManager gameManager;
 
 		Floor floor;
@@ -33,9 +34,17 @@ namespace Vamp
         {
             // TODO: Add your initialization logic here
             player = new Player(new Vector2(160, 160));
-	
+
 			attacks = new List<Attack>();
-			gameManager = new GameManager(attacks);
+            enemies = new List<Enemy>();
+            
+            for (int i = 0; i < 20; i++)
+            {
+                int x = 160 + i * 30;
+                enemies.Add(new Enemy(new Vector2(x, 200)));
+            }
+
+			gameManager = new GameManager(attacks, enemies);
 			camera = new Camera(player, GraphicsDevice);
 			floor = new Floor(5, 2);
             
@@ -69,6 +78,12 @@ namespace Vamp
             player.Update(time, Keyboard.GetState(), attacks);
 			floor.Update(player);
 
+            foreach (Enemy enemy in enemies)
+            {
+                enemy.Update(player, (float) time.ElapsedGameTime.TotalSeconds, attacks);
+                if(!enemy.IsAlive()) gameManager.MarkForRemoval(enemy);
+            }
+
 			foreach (Attack attack in attacks)
 			{
 				attack.Update(time);
@@ -94,7 +109,7 @@ namespace Vamp
 					camera.ViewMatrix);
 
             spriteBatch.Draw(pixel, player.Position, null, 
-					Color.Green, 
+					Color.Blue, 
 					0, Vector2.Zero, player.Dimension * player.Scale * 2, SpriteEffects.None, 0);
 
 			counter += (float) time.ElapsedGameTime.TotalSeconds;
@@ -106,6 +121,13 @@ namespace Vamp
 					0, Vector2.Zero, player.Size() * 2, SpriteEffects.None, 0);
 
 			player.DrawCollider(spriteBatch);
+
+            foreach (Enemy enemy in enemies)
+            {
+                spriteBatch.Draw(pixel, enemy.Position - enemy.Size(), null, 
+                    Color.Gray, 
+                    0, Vector2.Zero, enemy.Size() * 3, SpriteEffects.None, 0);
+            }
 
 			foreach (Attack attack in attacks)
 			{
