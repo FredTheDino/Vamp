@@ -114,7 +114,7 @@ namespace Vamp
 			this.rooms = new List<Room>();
 
 			// First room is allways set.
-			Room room = new Room(-5, -5, 10, 10);
+			Room room = new Room(-7, -7, 14, 14);
 			rooms.Add(room);
 
 			for (int i = 0; i < length; i++)
@@ -131,8 +131,8 @@ namespace Vamp
 
 					int startX, startY;
 					int offset = RNG.RandomIntInRange(-2, 2);
-					int w = RNG.RandomIntInRange(12, 19);
-					int h = RNG.RandomIntInRange(10, 15);
+					int w = RNG.RandomIntInRange(15, 21);
+					int h = RNG.RandomIntInRange(11, 17);
 					if (direction == 0)
 					{
 						// Up
@@ -239,6 +239,19 @@ namespace Vamp
 					tiles.Add(new Tile(tileX, tileY, type));
 				}
 			}
+		}
+
+		bool ContainsWorldPoint(Vector2 point)
+		{
+			if (point.X < (x * Tile.TileSize))
+				return false;
+			if (point.X > ((x + w) * Tile.TileSize))
+				return false;
+			if (point.Y < (y * Tile.TileSize))
+				return false;
+			if (point.Y > ((y + h) * Tile.TileSize))
+				return false;
+			return true;
 		}
 
 		public MapRegion ToRegion()

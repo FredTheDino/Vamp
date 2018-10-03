@@ -60,16 +60,32 @@ namespace Vamp
 	// Any GameObject that can collide has this.
 	public class Collider
 	{
+		private GameObject owner;
 		private Shape shape;
 		private bool movable;
+		private bool trigger;
+		private List<Overlap> overlaps;
 
-		public Collider(bool movable=false, Shape shape=Shape.Box) 
+		public Shape Shape { get { return shape; } set { shape = value; }}
+		public GameObject Owner { get { return owner; } set { owner = value; } }
+		public bool Movable { get { return movable; } set { movable = value; }}
+		public bool Trigger { get { return trigger; } set { trigger = value; }}
+		public List<Overlap> Overlaps { get { return overlaps; } }
+
+		public Collider(bool movable, Shape shape) 
+		{
+			Collider(movable, false, shape);
+		}
+
+		public Collider(bool movable=false, bool trigger=false, Shape shape=Shape.Box) 
 		{
 			this.shape = shape;
 			this.movable = movable;
+			this.trigger = trigger;
+			this.overlaps = new List<Overlap>(10);
 		}
 
-		// Projects the Collider like if it was in 1 dimensions.
+		// Projects the Collider onto a normal.
 		public float Project(Vector2 Size, Vector2 normal)
 		{
 			float result;
@@ -87,46 +103,12 @@ namespace Vamp
 			}
 			return result;
 		}
-	
-		// Checks if a and b overlap and if it does generates a valid Overlap.
-		public static Overlap Check(GameObject a, GameObject b)
+
+		public void AddOverlap(Overlap overlap)
 		{
-			Overlap overlap = new Overlap(a, b);
-			Vector2 distance = a.Position - b.Position;
-			// Find all potential normals.
-			Vector2[] normals = new Vector2[] {
-				new Vector2( 1,  0), new Vector2( 0,  1),
-				Vector2.Normalize(distance)
-			};
-
-			foreach (Vector2 normal in normals)
-			{
-				float projected_distance = 
-					Math.Abs(Vector2.Dot(distance, normal));
-				float projected_limit = 
-					Math.Abs(b.Collider.Project(b.Size(),  normal)) + 
-					Math.Abs(a.Collider.Project(a.Size(), -normal));
-				float depth = projected_limit - projected_distance;
-
-				// They overlap.
-				if (depth < overlap.depth)
-				{
-					// Can this be refactored.
-					overlap.normal = Vector2.Dot(normal, distance) < 0 ? -normal : normal;
-					overlap.depth = depth;
-
-					if (depth < 0.0)
-					{
-						break;
-					}
-				}
-			}
-
-			return overlap;
+			overlaps.Add(overlap);
 		}
-
-		public Shape Shape { get { return shape; } set { shape = value; }}
-		public bool Movable { get { return movable; } set { movable = value; }}
+	
 	}
 }
 

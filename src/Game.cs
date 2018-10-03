@@ -10,16 +10,16 @@ namespace Vamp
 {
     public class VampGame : Game
     {
-        GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
-        Texture2D test, playersprite, pixel;
-        Player player;
+        static GraphicsDeviceManager graphics;
+        static SpriteBatch spriteBatch;
+        static Texture2D test, playersprite, pixel;
+        static Player player;
 
-		Camera camera;
-		List<Attack> attacks;
-		GameManager gameManager;
+		static Camera camera;
+		static List<Attack> attacks;
+		static GameManager gameManager;
 
-		Floor floor;
+		static Floor floor;
         
         public VampGame()
         {
@@ -85,7 +85,6 @@ namespace Vamp
             base.Update(time);
         }
 
-		float counter;
         protected override void Draw(GameTime time)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
@@ -96,8 +95,6 @@ namespace Vamp
             spriteBatch.Draw(pixel, player.Position, null, 
 					Color.Green, 
 					0, Vector2.Zero, player.Dimension * player.Scale * 2, SpriteEffects.None, 0);
-
-			counter += (float) time.ElapsedGameTime.TotalSeconds;
 
 			floor.Draw(spriteBatch, pixel);
 

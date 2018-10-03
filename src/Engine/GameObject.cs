@@ -10,7 +10,7 @@ namespace Vamp
     /*
      * Main class for all objects in the game
      */
-    public /*abstract*/ class GameObject
+    public class GameObject
     {
 		// The id counter for all GameObjects
 		private static long ID = 0;
@@ -30,6 +30,14 @@ namespace Vamp
         // The attached collider
         protected Collider collider = null;
 
+		public long Id { get { return id; }}
+
+        public Collider Collider { get { return collider; } }
+
+        public Vector2 Dimension { get { return dimension; } set { dimension = value; } }
+        public Vector2 Position { get { return position; } set { position = value; } }
+		public Vector2 Scale { get { return scale; } set { scale = value; } }    
+
 
         // Base constructor
         public GameObject ()
@@ -45,6 +53,7 @@ namespace Vamp
 			this.dimension = dimension;
             this.scale = scale;
 			this.collider = collider;
+			this.collider.Owner = this;
         }
 
         // Empty Update function to allow all objects to update
@@ -88,17 +97,6 @@ namespace Vamp
 			}
 		}
 
-        // Getter and Setter methods
-		public long Id
-		{ get { return id; }}
-        public Collider Collider 
-		{ get { return collider; } set { collider = value; } }
-        public Vector2 Dimension 
-		{ get { return dimension; } set { dimension = value; } }
-        public Vector2 Position 
-		{ get { return position; } set { position = value; } }
-		public Vector2 Scale 
-		{ get { return scale; } set { scale = value; } }    
 	}
 }
 
